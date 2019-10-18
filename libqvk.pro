@@ -23,14 +23,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        api.cpp \
-    attachment.cpp \
-    messages.cpp
+        src/api.cpp \
+    src/attachment.cpp \
+    src/messages.cpp
 
 HEADERS += \
-        api.h \
-    attachment.h \
-    messages.h
+        src/api.h \
+    src/attachment.h \
+    src/messages.h
 unix {
     target.path = /usr/lib
     INSTALLS += target
