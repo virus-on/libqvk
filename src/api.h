@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QJsonObject>
+#include <QJsonDocument>
 #include <QHash>
 #include <QtNetwork>
 
@@ -10,18 +11,11 @@
 
 #include "attachment.h"
 
-namespace VK {
-
-using callback_func_cap = std::function<QString(const QString&)>*;
-using callback_func_fa2 = std::function<QString()>*;
 
 using jsonObject    = QJsonObject;
 using jsonArray     = QJsonArray;
 using jsonValue     = QJsonValue;
 using jsonDocument  = QJsonDocument;
-
-/* http params */
-using params_map = QHash<QString, QString>;
 
 template <typename T>
 inline T getValue(const jsonObject& obj, const QString& key)
@@ -62,6 +56,15 @@ inline jsonObject getValue(const jsonObject& obj, const QString& key)
     }
     throw std::runtime_error("Can't extract JsonObject from jsonObject");
 }
+
+
+namespace VK {
+
+using callback_func_cap = std::function<QString(const QString&)>*;
+using callback_func_fa2 = std::function<QString()>*;
+
+/* http params */
+using params_map = QHash<QString, QString>;
 
 class Client
 {
