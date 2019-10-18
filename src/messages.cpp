@@ -3,7 +3,7 @@
 namespace VK
 {
 
-bool DialogInfo::parse(const json &data)
+bool DialogInfo::parse(const jsonObject &data)
 {
     if (data.isEmpty())
         return false;
@@ -50,20 +50,20 @@ vector_dialogs Messages::get_dialogs(const size_t count, const size_t offset)
         {"preview_length", "1"},
     };
 
-    json jres = call("messages.getDialogs", params);
+    jsonObject jres = call("messages.getDialogs", params);
     if (jres.isEmpty())
         return res;
 
     if (!jres.contains("error"))
     {
-        QJsonArray items = getValue<QJsonArray>(getValue<json>(jres, "response"), "items");
+        QJsonArray items = getValue<QJsonArray>(getValue<jsonObject>(jres, "response"), "items");
 
         for (auto it = items.begin(); it != items.end(); it++)
         {
-            json item = items.at(it.i).toObject();
+            jsonObject item = items.at(it.i).toObject();
             if (!item.contains("message"))
                 continue;
-            item = getValue<json>(item, "message");
+            item = getValue<jsonObject>(item, "message");
             VK::DialogInfo dialog;
             if (dialog.parse(item))
             {
@@ -107,10 +107,10 @@ QString Messages::get_chat_title(const int chat_id)
         {"chat_ids", QString::number(chat_id - chat_offset)},
     };
 
-    json jres = call("messages.getChat", params);
+    jsonObject jres = call("messages.getChat", params);
     if (jres.isEmpty() || jres.contains("error"))
         return "";
-    json info = getValue<json>(jres, "response");
+    jsonObject info = getValue<jsonObject>(jres, "response");
     info = jres.begin().value().toObject();
     QString tmp = getValue<QString>(info, "title");
     return tmp;
@@ -122,11 +122,11 @@ QString Messages::get_username(const int user_id)
         {"user_ids", QString::number(user_id)},
     };
 
-    json jres = call("users.get", params);
+    jsonObject jres = call("users.get", params);
     if (jres.isEmpty() || jres.contains("error"))
         return "";
     Attachment::User user;
-    json info = getValue<json>(jres, "response");
+    jsonObject info = getValue<jsonObject>(jres, "response");
     if (info.isEmpty())
         return "";
     info = jres.begin().value().toObject();
@@ -151,22 +151,22 @@ std::vector<T> Messages::get_attachments(const int chat_id, const size_t count)
     {
         for (;;)
         {
-            json jres = call("messages.getHistoryAttachments", params);
+            jsonObject jres = call("messages.getHistoryAttachments", params);
             if (jres.isEmpty())
                 return res;
 
             size_t parsed = 0;
             if (!jres.contains("error"))
             {
-                next = getValue<QString>(getValue<json>(jres, "response"), "next_from");
+                next = getValue<QString>(getValue<jsonObject>(jres, "response"), "next_from");
 
-                QJsonArray items = getValue<QJsonArray>(getValue<json>(jres, "response"), "items");
+                QJsonArray items = getValue<QJsonArray>(getValue<jsonObject>(jres, "response"), "items");
                 for (auto it = items.begin(); it != items.end(); it++)
                 {
-                    json item = items.at(it.i).toObject();
+                    jsonObject item = items.at(it.i).toObject();
                     if (!item.contains("attachment"))
                         continue;
-                    item = getValue<json>(item, "attachment");
+                    item = getValue<jsonObject>(item, "attachment");
                     T att;
                     if (att.parse(item))
                     {

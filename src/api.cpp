@@ -24,14 +24,13 @@ QString Client::data2str(const params_map &data)
 
     for (auto& key: data.keys())
     {
-        qDebug() << key << "=" << data.value(key) + '&';
         params += key + "=" + QUrl::toPercentEncoding(data[key]) + "&";
     }
 
     return params;
 }
 
-json Client::str2json(const QString &str)
+jsonObject Client::str2json(const QString &str)
 {
     QJsonDocument doc = QJsonDocument::fromJson(str.toUtf8());
     if (!doc.isNull() && doc.isObject())
@@ -42,15 +41,15 @@ json Client::str2json(const QString &str)
 
 bool Client::check_access()
 {
-    json jres = call("users.get", "");
+    jsonObject jres = call("users.get", "");
     if(jres.find("error") != jres.end()) {
         this->clear();
         return false;
     }
     try {
-        json info = getValue<json>(jres, "response");
-        info = info.begin().value().toObject();
-        user.parse(info);
+        jsonArray  info = getValue<jsonArray>(jres, "response");
+        jsonObject infoObj = info.begin()->toObject();
+        user.parse(infoObj);
     }
     catch(const std::exception& ex) {
         qDebug() << ex.what();
@@ -65,7 +64,7 @@ QString Client::request(const QString &url, const QString &data)
 {
     QString wholeUrl = url + (data.isEmpty() ? "" : "?" ) + data;
     QString replyBody;
-    qDebug() << url;
+    qDebug() << wholeUrl;
 
     QNetworkAccessManager* mgr = new QNetworkAccessManager();
     QNetworkReply *rep = mgr->get(QNetworkRequest(wholeUrl));
@@ -134,7 +133,7 @@ bool Client::auth(const QString &login, const QString &pass, const QString &acce
 
     try
     {
-        json jres = str2json(res);
+        jsonObject jres = str2json(res);
         if (!jres.contains("error") || jres.contains("access_token"))
         {
             a_t = getValue<QString>(jres, "access_token");
@@ -204,10 +203,10 @@ bool Client::oauth(const callback_func_cap handler)
     return !a_t.isEmpty();
 }
 
-json Client::call(const QString &method, const params_map &params)
+jsonObject Client::call(const QString &method, const params_map &params)
 {
     if (method.isEmpty())
-        return json();
+        return jsonObject();
 
     QString data;
     if (params.size() > 0)
@@ -216,10 +215,10 @@ json Client::call(const QString &method, const params_map &params)
     return call(method, data);
 }
 
-json Client::call(const QString &method, const QString &params)
+jsonObject Client::call(const QString &method, const QString &params)
 {
     if (method.isEmpty())
-        return json();
+        return jsonObject();
     QString url = api_url + method;
     QString data = params + (params.isEmpty() ? "" : "&");
 
@@ -240,16 +239,16 @@ json Client::call(const QString &method, const QString &params)
 
     QString res = request(url, data);
     if (res.isEmpty())
-        return json();
+        return jsonObject();
 
     try
     {
-        json jres = str2json(res);
+        jsonObject jres = str2json(res);
 
         if (!jres.contains("error"))
             return jres;
 
-        json item = getValue<json>(jres, "error");
+        jsonObject item = getValue<jsonObject>(jres, "error");
         l_error = getValue<QString>(item, "error_msg");
 
         if (l_error == "need_captcha")
@@ -265,7 +264,7 @@ json Client::call(const QString &method, const QString &params)
         qDebug() << ex.what();
     }
 
-    return json();
+    return jsonObject();
 }
 
 void Client::clear()

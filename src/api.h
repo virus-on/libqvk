@@ -15,13 +15,16 @@ namespace VK {
 using callback_func_cap = std::function<QString(const QString&)>*;
 using callback_func_fa2 = std::function<QString()>*;
 
-using json = QJsonObject;
+using jsonObject    = QJsonObject;
+using jsonArray     = QJsonArray;
+using jsonValue     = QJsonValue;
+using jsonDocument  = QJsonDocument;
 
 /* http params */
 using params_map = QHash<QString, QString>;
 
 template <typename T>
-inline T getValue(const json& obj, const QString& key)
+inline T getValue(const jsonObject& obj, const QString& key)
 {
     if (obj.contains(key))
     {
@@ -29,7 +32,35 @@ inline T getValue(const json& obj, const QString& key)
         if (universalContainer.canConvert<T>())
             return universalContainer.value<T>();
     }
-    throw std::runtime_error("Can't extract value from json object");
+    throw std::runtime_error("Can't extract value from jsonObject object");
+}
+
+template <>
+inline jsonArray getValue(const jsonObject& obj, const QString& key)
+{
+    if (obj.contains(key))
+    {
+        jsonValue val = obj[key];
+        if (val.isArray())
+        {
+            return val.toArray();
+        }
+    }
+    throw std::runtime_error("Can't extract JsonArray from jsonObject");
+}
+
+template <>
+inline jsonObject getValue(const jsonObject& obj, const QString& key)
+{
+    if (obj.contains(key))
+    {
+        jsonValue val = obj[key];
+        if (val.isObject())
+        {
+            return val.toObject();
+        }
+    }
+    throw std::runtime_error("Can't extract JsonObject from jsonObject");
 }
 
 class Client
@@ -55,7 +86,7 @@ private:
     inline QString get_captcha_key(const QString &captcha_sid);
     inline QString get_fa2_code();
     QString        data2str(const params_map &data);
-    json           str2json(const QString& str);
+    jsonObject           str2json(const QString& str);
 
 protected:
     QString             version;
@@ -75,9 +106,9 @@ public:
 
     bool oauth(const callback_func_cap handler);
 
-    json call(const QString &method, const params_map &params);
+    jsonObject call(const QString &method, const params_map &params);
 
-    json call(const QString &method, const QString &params = "");
+    jsonObject call(const QString &method, const QString &params = "");
 
     void clear();
 

@@ -2,10 +2,14 @@
 #define VK_ATTACHMENT_H
 
 #include <QJsonObject>
+#include <QJsonDocument>
 
 namespace VK {
 
-using json = QJsonObject;
+using jsonObject    = QJsonObject;
+using jsonArray     = QJsonArray;
+using jsonValue     = QJsonValue;
+using jsonDocument  = QJsonDocument;
 
 /* List of VK Attacment, e.g.: Audio, Photo, Document
  */
@@ -18,10 +22,10 @@ class DataModel {
 protected:
     bool parsed;
 public:
-    /* parse json and fill self fileds
+    /* parse jsonObject and fill self fileds
      * if all is ok returned true
      */
-    virtual bool parse(const json &data) = 0;
+    virtual bool parse(const jsonObject &data) = 0;
 
     /* return class fields in std::string
      */
@@ -44,7 +48,7 @@ public:
     QString last_name;
     size_t user_id;
 
-    bool parse(const json &data);
+    bool parse(const jsonObject &data);
     QString dump() {
         return QString::number(user_id) + " - " + first_name + " " + last_name;
     }
@@ -58,8 +62,8 @@ public:
 class BaseAttachment : public DataModel {
 protected:
     QString parsed_type;
-    bool parse_type(const json &data);
-    bool parse_common(const json &data);
+    bool parse_type(const jsonObject &data);
+    bool parse_common(const jsonObject &data);
 public:
     int id;
     int owner_id;
@@ -80,7 +84,7 @@ public:
     QString artist;
     QString title;
     size_t duration; /* in seconds */
-    bool parse(const json &data);
+    bool parse(const jsonObject &data);
     QString dump() {
         return artist + " - " + title + " : " + QString::number(duration);
     }
@@ -95,7 +99,7 @@ class Photo : public BaseAttachment {
 public:
     static const QString type; /* need to make request to API */
     QString text;
-    bool parse(const json &data);
+    bool parse(const jsonObject &data);
     QString dump() {
         return text + " - " + direct_url + " : " + QString::number(date);
     }
@@ -115,7 +119,7 @@ public:
     static QString doc_type_str(const int tp);
     size_t size = 0; /* in byte */
 
-    bool parse(const json &data);
+    bool parse(const jsonObject &data);
     QString dump() {
         return title + " - " + ext + " : " + QString::number(size);
     }

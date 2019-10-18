@@ -11,7 +11,7 @@ const QString Audio::type = "audio";
 const QString Photo::type = "photo";
 const QString Document::type = "doc";
 
-bool BaseAttachment::parse_type(const json &data)
+bool BaseAttachment::parse_type(const jsonObject &data)
 {
     try
     {
@@ -26,7 +26,7 @@ bool BaseAttachment::parse_type(const json &data)
     return false;
 }
 
-bool BaseAttachment::parse_common(const json &data)
+bool BaseAttachment::parse_common(const jsonObject &data)
 {
     try
     {
@@ -43,7 +43,7 @@ bool BaseAttachment::parse_common(const json &data)
     return false;
 }
 
-bool Audio::parse(const json &data)
+bool Audio::parse(const jsonObject &data)
 {
     if (data.isEmpty())
         return false;
@@ -53,7 +53,7 @@ bool Audio::parse(const json &data)
         if (!parse_type(data) || parsed_type != type)
             return false;
 
-        json att = getValue<json>(data, type);
+        jsonObject att = getValue<jsonObject>(data, type);
         if (att.isEmpty())
             return false;
         parse_common(att);
@@ -71,7 +71,7 @@ bool Audio::parse(const json &data)
     return false;
 }
 
-bool Photo::parse(const json &data)
+bool Photo::parse(const jsonObject &data)
 {
     std::vector<QString> sizes = { "photo_2560", "photo_1280", "photo_807", "photo_604", "photo_130", "photo_75"};
     if (data.isEmpty())
@@ -82,7 +82,7 @@ bool Photo::parse(const json &data)
         if (!parse_type(data) || parsed_type != type)
             return false;
 
-        json att = getValue<json>(data, type);
+        jsonObject att = getValue<jsonObject>(data, type);
         if (att.isEmpty())
             return false;
         parse_common(att);
@@ -128,7 +128,7 @@ QString Document::doc_type_str(const int tp)
     }
 }
 
-bool Document::parse(const json &data)
+bool Document::parse(const jsonObject &data)
 {
     if (data.isEmpty())
         return false;
@@ -138,7 +138,7 @@ bool Document::parse(const json &data)
         if (!parse_type(data) || parsed_type != type)
             return false;
 
-        json att = getValue<json>(data, type);
+        jsonObject att = getValue<jsonObject>(data, type);
         if (att.isEmpty())
             return false;
         parse_common(att);
@@ -157,7 +157,7 @@ bool Document::parse(const json &data)
     return false;
 }
 
-bool User::parse(const json &data)
+bool User::parse(const jsonObject &data)
 {
     if (data.isEmpty())
         return false;

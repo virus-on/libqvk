@@ -7,9 +7,10 @@
 QT       -= gui
 QT       += core network
 
-TARGET = libqvk
+TARGET = qvk
 TEMPLATE = lib
-CONFIG += staticlib c++14
+CONFIG += staticlib
+QMAKE_CXXFLAGS += -std=c++1y
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings

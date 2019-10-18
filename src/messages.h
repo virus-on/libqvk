@@ -15,7 +15,7 @@ public:
     QString body;
     QString title;
 
-    bool parse(const json &data);
+    bool parse(const jsonObject &data);
 
     inline QString dump()
     {
