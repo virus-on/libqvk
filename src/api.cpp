@@ -62,18 +62,18 @@ bool Client::check_access()
 
 QString Client::request(const QString &url, const QString &data)
 {
-    QString wholeUrl = url + (data.isEmpty() ? "" : "?" ) + data;
+    QString wholeUrl = url + (data.isEmpty() ? "" : "?" );
     QString replyBody;
     qDebug() << wholeUrl;
 
     QNetworkAccessManager* mgr = new QNetworkAccessManager();
-    QNetworkReply *rep = mgr->get(QNetworkRequest(wholeUrl));
+    QNetworkReply *rep = mgr->post(QNetworkRequest(wholeUrl), data.toLatin1());
     while (!rep->isFinished())
         QCoreApplication::processEvents();
 
     if (rep->error() != QNetworkReply::NoError)
     {
-        qDebug() << rep->errorString();
+        qDebug() << "Can't send request error:" << rep->errorString();
         return "";
     }
 
