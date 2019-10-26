@@ -60,8 +60,8 @@ inline jsonObject getValue(const jsonObject& obj, const QString& key)
 
 namespace VK {
 
-using callback_func_cap = std::function<QString(const QString&)>*;
-using callback_func_fa2 = std::function<QString()>*;
+using callback_func_cap = std::function<QString(const QString&)>;
+using callback_func_fa2 = std::function<QString()>;
 
 /* http params */
 using params_map = QHash<QString, QString>;
@@ -83,10 +83,10 @@ private:
 
     QString l_error;
 
-    callback_func_cap captcha_callback = nullptr;
-    callback_func_fa2 fa2_callback = nullptr;
+    callback_func_cap captcha_callback;
+    callback_func_fa2 fa2_callback;
 
-    inline QString get_captcha_key(const QString &captcha_sid);
+    inline QString get_captcha_key(const QString &_captcha_sid);
     inline QString get_fa2_code();
     QString        data2str(const params_map &data);
     jsonObject           str2json(const QString& str);
@@ -102,7 +102,7 @@ protected:
 public:
     Client(const QString _version = "5.65",
            const QString _lang = "en",
-           const callback_func_cap cap_callback = nullptr,
+           const callback_func_cap _cap_callback = nullptr,
            const callback_func_fa2 _fa2_callback = nullptr);
 
     bool auth(const QString &login, const QString &pass, const QString &access_token = "");

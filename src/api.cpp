@@ -8,14 +8,14 @@ const QString Client::app_secret= "VeWdmVclDCtn6ihuP1nt";// android=hHbZxrka2uZ6
 const QString Client::scope     = "offline,groups,messages,friends,audio";
 const QString Client::auth_url  = "https://oauth.vk.com/token";
 
-QString Client::get_captcha_key(const QString &captcha_sid)
+QString Client::get_captcha_key(const QString &_captcha_sid)
 {
-    return (captcha_callback != nullptr) ? (*captcha_callback)(captcha_sid) : "";
+    return (captcha_callback == nullptr ? "" : captcha_callback(_captcha_sid) ) ;
 }
 
 QString Client::get_fa2_code()
 {
-    return (fa2_callback != nullptr) ? (*fa2_callback)() : "";
+    return (fa2_callback == nullptr ? "" : fa2_callback() ) ;
 }
 
 QString Client::data2str(const params_map &data)
@@ -85,8 +85,8 @@ QString Client::request(const QString &url, const QString &data)
     return replyBody;
 }
 
-Client::Client(const QString _version, const QString _lang, const callback_func_cap cap_callback, const callback_func_fa2 _fa2_callback)
-    : captcha_callback(cap_callback)
+Client::Client(const QString _version, const QString _lang, const callback_func_cap _cap_callback, const callback_func_fa2 _fa2_callback)
+    : captcha_callback(_cap_callback)
     , fa2_callback(_fa2_callback)
     , version(_version), lang(_lang) { }
 
@@ -183,7 +183,7 @@ bool Client::oauth(const callback_func_cap handler)
     };
 
     oauth_url += data2str(params);
-    QString blank = (*handler)(oauth_url);
+    QString blank = handler(oauth_url);
     if (blank.isEmpty())
         return false;
 
